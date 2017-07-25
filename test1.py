@@ -486,7 +486,7 @@ def DefaultParse(theParseTwice,theflag):
 	for i in range(inde):
 		tpt.append(i)
 	tptdict = dict(zip(tpt,theParseTwice))
-
+	thelastlist = []#save the dict by parsed
 	#验证程序
 	# for key,value in tptdict.items():
 	# 	print("the value of tptdict", key ,value[0])
@@ -496,6 +496,13 @@ def DefaultParse(theParseTwice,theflag):
 		file_id = key
 		start_flag = value[0]
 		end_flag = value[1]
+		#################################################################################
+		accuser_list = []
+		defendant_list = []
+		third_list = []
+		A_value = [accuser_list,defendant_list,third_list]
+		B_key = ['原告','被告','第三方']
+		#################################################################################
 		for key ,value in tptdict.items():
 			if file_id == key:
 				print("the id file : ", key )
@@ -526,24 +533,26 @@ def DefaultParse(theParseTwice,theflag):
 								cws = "".join(cw)
 								a_test = re.search("^\uFF08|^\uFF1A",cws)
 								if a_test is None:
-									print("诉讼提起方: ",cws)
+									accuser_list.append(cws)
+									#print("诉讼提起方: ",cws)
+
 								else:
 									#print("the wit ca : ",a_test.group(0))
 									#此时取“：”或“）”之后的.*值
 									m = re.search("\uFF09", cws)
-									
 									if m is None:
 										#print("the value of m : ", cws)
 										aim_string1 = re.search("[^\uFF1A].*|[^\u0020\uFF1A].*|[^\u0020\uFF1A\u0020].*", cws)
-										print("诉讼提起方：", aim_string1.group(0))
-										#print("诉讼提起方 ： ",aim_string1.group(0))
+										accuser_list.append(aim_string1.group(0))
+										#print("诉讼提起方：", aim_string1.group(0))
 									else:
 										a_string = re.search("\uFF09.*", cws)
 										aim_string = re.search("(?<=\uFF09).*", a_string.group(0))
 										aim_string1 = re.search("[^\u0020\uFF1A].*|[^\uFF1A].*",aim_string.group(0))
-										#print("value b ob 1 : ",aim_string1.group(0))
-										print("诉讼提起方：",aim_string1.group(0))
-										#print("诉讼提起方 ： ",aim_string.group(0))
+										accuser_list.append(aim_string1.group(0))
+										#print("诉讼提起方：",aim_string1.group(0))
+								#A_value.append(accuser_list)
+								print("原告", accuser_list)
 						else:
 							if sub_cw in defendant_dict:
 								#将诉讼提起方的字段提取出来
@@ -554,24 +563,25 @@ def DefaultParse(theParseTwice,theflag):
 								cws = "".join(cw)
 								a_test = re.search("^\uFF08|^\uFF1A",cws)
 								if a_test is None:
-									print("被诉讼方: ",cws)
+									defendant_list.append(cws)
+									#print("被诉讼方: ",cws)
 								else:
 									#print("the wit ca : ",a_test.group(0))
 									#此时取“：”或“）”之后的.*值
 									m = re.search("\uFF09", cws)
-									
 									if m is None:
 										#print("the value of m : ", cws)
 										aim_string1 = re.search("[^\uFF1A].*|[^\u0020\uFF1A].*|[^\u0020\uFF1A\u0020].*", cws)
-										print("被诉讼方：", aim_string1.group(0))
+										defendant_list.append(aim_string1.group(0))
+										#print("被诉讼方：", aim_string1.group(0))
 										#print("诉讼提起方 ： ",aim_string1.group(0))
 									else:
 										a_string = re.search("\uFF09.*", cws)
 										aim_string = re.search("(?<=\uFF09).*", a_string.group(0))
 										aim_string1 = re.search("[^\u0020\uFF1A].*|[^\uFF1A].*",aim_string.group(0))
-										#print("value b ob 1 : ",aim_string1.group(0))
-										print("被诉讼方：",aim_string1.group(0))
-								#print("被诉讼方 ： ", "".join(cw))
+										defendant_list.append(aim_string1.group(0))
+										#print("被诉讼方：",aim_string1.group(0))
+								print("被告：", defendant_list)
 							else:
 								if sub_cw in third_dict:
 									#将诉讼提起方的字段提取出来
@@ -582,7 +592,8 @@ def DefaultParse(theParseTwice,theflag):
 									cws = "".join(cw)
 									a_test = re.search("^\uFF08|^\uFF1A",cws)
 									if a_test is None:
-										print("the value cws : ",cws)
+										third_list.append(cws)
+										#print("the value cws : ",cws)
 									else:
 										#print("the wit ca : ",a_test.group(0))
 										#此时取“：”或“）”之后的.*值
@@ -591,26 +602,24 @@ def DefaultParse(theParseTwice,theflag):
 										if m is None:
 											#print("the value of m : ", cws)
 											aim_string1 = re.search("[^\uFF1A].*|[^\u0020\uFF1A].*|[^\u0020\uFF1A\u0020].*", cws)
-											print("第三方：", aim_string1.group(0))
+											third_list.append(aim_string1.group(0))
+											#print("第三方：", aim_string1.group(0))
 											#print("诉讼提起方 ： ",aim_string1.group(0))
 										else:
 											a_string = re.search("\uFF09.*", cws)
 											aim_string = re.search("(?<=\uFF09).*", a_string.group(0))
 											aim_string1 = re.search("[^\u0020\uFF1A].*|[^\uFF1A].*",aim_string.group(0))
-											#print("value b ob 1 : ",aim_string1.group(0))
-											print("第三方：",aim_string1.group(0))
-									#print("第三方 ：","".join(cw))
-
-				# 	contentCutWord = jieba.cut("".join(a),cut_all=False)
-				# #将分词后的字串和自定义库比较并将原告
-				# #theWPString = "".join(contentCutWord)
-				# for in ：
-				# print("Default Model:"+"".join(contentCutWord))
-
-		
-				#print("the value of aimfile", contentCutWord)
-
-
+											third_list.append(aim_string1.group(0))
+											#print("第三方：",aim_string1.group(0))
+									print("第三方 ：",third_list)
+		#print("value", A_value)
+		the_last = dict(zip(B_key,A_value))
+		thelastlist.append(the_last)
+		#ajson = json.dumps(thelastlist,sort_keys = True,indent = 2,ensure_ascii=False)
+		turn_json = json.dumps(thelastlist,ensure_ascii=False)
+		#print("the value of the last dict",the_last)
+	#print("the last list : ",ajson)
+	return turn_json
 #############################################################################################################
 		#先匹配每行中含有原告，上诉人，原审原告，申请人，申请再审人，再审申请人，原审上诉人，申请执行人，
 		#accuserSide = re.compile("pattern")
@@ -627,7 +636,7 @@ def DefaultParse(theParseTwice,theflag):
 		#通过建立解析字典函数完成二次解析
 
 #利用theflag作为一个输入的参数进入第二次解析
-DefaultParse(parseTwice, theflag_ss)
+thelastlist = DefaultParse(parseTwice, theflag_ss)
 
 ##############################################################################################################
 ##############################################################################################################
@@ -636,5 +645,7 @@ DefaultParse(parseTwice, theflag_ss)
 ###### 1. 将解析出的字段输出为txt文本格式的文件中保存；######
 ###### 2. 将已经解析的文本和未能解析的文本占总解析量的比例计算并输出；######
 ##############################################################################################################
-def txt_json_output():
-	pass
+# def txt_json_output(thelastlist):
+# 	print("value", thelastlist)
+	
+# txt_json_output(thelastlist)
